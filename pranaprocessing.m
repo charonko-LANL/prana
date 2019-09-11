@@ -662,7 +662,7 @@ switch char(M)
                 
                 t1=tic;
                 [X,Y]=IMgrid(imageSize,Gres(e,:),Gbuf(e,:));
-                length(X)
+               
 %                 if strcmp(M,'Multipass')
 %                     %UI and VI are already only defined on the grid points,
 %                     %which are the same at every iteration
@@ -2294,8 +2294,7 @@ switch char(M)
                     Dc=zeros(sum(Eval(:,1)>=0),3,N,imClass);
                     %we temporarily need matrix form for the interpolation
                     Xm = X;
-                    Ym = Y;
-%                     
+                    Ym = Y;%                     
 %                     S=size(X);X=X(:);Y=Y(:);
                     
                     for t=1:N
