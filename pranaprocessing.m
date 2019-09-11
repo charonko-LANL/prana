@@ -685,7 +685,7 @@ switch char(M)
                 S=size(X);X=X(:);Y=Y(:);
 
                 %this still works (mostly) because the mask is defined on the pixel grid
-                size(downsample(downsample( mask(Y(1):Y(end),X(1):X(end)),Gres(e,2))',Gres(e,1)))   
+                 
                 
                 Eval=reshape(downsample(downsample( mask(Y(1):Y(end),X(1):X(end)),Gres(e,2))',Gres(e,1))',length(X),1);
                 
