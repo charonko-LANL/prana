@@ -662,7 +662,7 @@ switch char(M)
                 
                 t1=tic;
                 [X,Y]=IMgrid(imageSize,Gres(e,:),Gbuf(e,:));
-                
+                length(X)
 %                 if strcmp(M,'Multipass')
 %                     %UI and VI are already only defined on the grid points,
 %                     %which are the same at every iteration
@@ -685,7 +685,10 @@ switch char(M)
                 S=size(X);X=X(:);Y=Y(:);
 
                 %this still works (mostly) because the mask is defined on the pixel grid
+                size(downsample(downsample( mask(Y(1):Y(end),X(1):X(end)),Gres(e,2))',Gres(e,1)))   
+                
                 Eval=reshape(downsample(downsample( mask(Y(1):Y(end),X(1):X(end)),Gres(e,2))',Gres(e,1))',length(X),1);
+                
                 Eval(Eval==0)=-1;
                 Eval(Eval>0)=0;
                 
@@ -2270,9 +2273,10 @@ switch char(M)
             for e=1:P
                 t1=tic;
                 [X,Y]=IMgrid(imageSize,Gres(e,:),Gbuf(e,:));
-                
+                 S=size(X);X=X(:);Y=Y(:);
+                 
                 if ~strcmpi(Corr{e},'SPC')
-                    U=zeros(size(X,1),3,N,imClass);
+                    U=zeros(size(X,1),3,N,imClass);                    
                     V=zeros(size(X,1),3,N,imClass);
                     C=zeros(size(X,1),3,N,imClass);
                     Di=zeros(size(X,1),3,N,imClass);
@@ -2280,19 +2284,19 @@ switch char(M)
                     Uval=zeros(size(X,1),3,imClass);
                     Vval=zeros(size(X,1),3,imClass);
                     Cval=zeros(size(X,1),3,imClass);
-                    Dval=zeros(size(X,1),3,imClass);
-                    Eval=repmat(reshape(downsample(downsample( mask(Y(1):Y(end),X(1):X(end)),Gres(e,2))',Gres(e,1))',length(X),1),[1 3]);
+                    Dval=zeros(size(X,1),3,imClass);               
+                    Eval=reshape(downsample(downsample( mask(Y(1):Y(end),X(1):X(end)),Gres(e,2))',Gres(e,1))',length(X),1);                  
                     Eval(Eval==0)=-1;
                     Eval(Eval>0)=0;
-                    Uc=zeros(sum(Eval(:,1)>=0),3,N,imClass);
+                    Uc=zeros(sum(Eval(:,1)>=0),3,N,imClass);                   
                     Vc=zeros(sum(Eval(:,1)>=0),3,N,imClass);
                     Cc=zeros(sum(Eval(:,1)>=0),3,N,imClass);
                     Dc=zeros(sum(Eval(:,1)>=0),3,N,imClass);
                     %we temporarily need matrix form for the interpolation
                     Xm = X;
                     Ym = Y;
-                    
-                    S=size(X);X=X(:);Y=Y(:);
+%                     
+%                     S=size(X);X=X(:);Y=Y(:);
                     
                     for t=1:N
 %                         Ub = reshape(downsample(downsample( UI(Y(1):Y(end),X(1):X(end)),Gres(e,2))',Gres(e,1))',length(X),1).*Dt(t);
@@ -2308,14 +2312,23 @@ switch char(M)
                         
                         
                         %correlate image pair
-                        %                         [Xc,Yc,Uc(:,:,t),Vc(:,:,t),Cc(:,:,t)]=PIVwindowed(im1(:,:,t),im2(:,:,t),Corr(e),Wsize(e,:),Wres(e, :, :),0,D(e),Zeromean(e),Peaklocator(e),1,X(Eval(:,1)>=0),Y(Eval(:,1)>=0),Ub(Eval(:,1)>=0),Vb(Eval(:,1)>=0));
-                        [Xc,Yc,Uc(:,:,t),Vc(:,:,t),Cc(:,:,t),Dc(:,:,t),Cp(:,:,:,t)]=PIVwindowed(im1(:,:,t),im2(:,:,t),Corr{e},Wsize(e,:),Wres(:, :, e),0,D(e,:),Zeromean(e),Peaklocator(e),1,frac_filt(e),saveplane(e),X(Eval(:,1)>=0),Y(Eval(:,1)>=0),Ub(Eval(:,1)>=0),Vb(Eval(:,1)>=0));
+%                                                 [Xc,Yc,Uc(:,:,t),Vc(:,:,t),Cc(:,:,t)]=PIVwindowed(im1(:,:,t),im2(:,:,t),Corr(e),Wsize(e,:),Wres(e, :, :),0,D(e),Zeromean(e),Peaklocator(e),1,X(Eval(:,1)>=0),Y(Eval(:,1)>=0),Ub(Eval(:,1)>=0),Vb(Eval(:,1)>=0));
+%                          [Xc,Yc,Uc,Vc,Cc,Dc,Cp,uncertainty2D,SNRmetric]=PIVwindowed(im1d,im2d,Corr{e},Wsize(e,:),Wres(:, :, e),0,D(e,:),Zeromean(e),Peaklocator(e),find_extrapeaks,frac_filt(e),saveplane(e),X(Eval>=0),Y(Eval>=0),uncertainty(e));
+                        [Xc,Yc,Uc(:,:,t),Vc(:,:,t),Cc(:,:,t),Dc(:,:,t),Cp(:,:,:,t),uncertainty2D,SNRmetric]=PIVwindowed(im1(:,:,t),im2(:,:,t),Corr{e},Wsize(e,:),Wres(:, :, e),0,D(e,:),Zeromean(e),Peaklocator(e),1,frac_filt(e),saveplane(e),X(Eval>=0),Y(Eval>=0),uncertainty(e),Ub(Eval>=0),Vb(Eval>=0));
+%                                                 [Xc,Yc,Uc(:,:,t),Vc(:,:,t),Cc(:,:,t),Dc(:,:,t),Cp(:,:,:,t)]=PIVwindowed(im1(:,:,t),im2(:,:,t),Corr{e},Wsize(e,:),Wres(:, :, e),0,D(e,:),Zeromean(e),Peaklocator(e),1,frac_filt(e),saveplane(e),X(Eval(:,1)>=0),Y(Eval(:,1)>=0),Ub(Eval(:,1)>=0),Vb(Eval(:,1)>=0));
+
                     end
-                    U(repmat(Eval>=0,[1 1 N]))=Uc;
-                    V(repmat(Eval>=0,[1 1 N]))=Vc;
-                    C(repmat(Eval>=0,[1 1 N]))=Cc;
-                    Di(repmat(Eval>=0,[1 1 N]))=Dc;
                     
+%                    
+%                     U(repmat(Eval>=0,[1 3]))
+                    
+%                    
+                    U(repmat(Eval>=0,[1 3 N]))=Uc;
+                    V(repmat(Eval>=0,[1 3 N]))=Vc;
+                    C(repmat(Eval>=0,[1 3 N]))=Cc;
+                    Di(repmat(Eval>=0,[1 3 N]))=Dc;
+
+%                     
                     velmag=sqrt(U(:,1,:).^2+V(:,1,:).^2);
                     Qp=C(:,1,:)./C(:,2,:).*(1-ds./velmag);
                     %                     Qp=1-2.*exp(-0.5)./velmag.*(C(:,1,:)./C(:,2,:)-1).^(-1);
@@ -2342,8 +2355,9 @@ switch char(M)
                     end
                     
                 else
-                    U=zeros(length(X),1);
+                    U=zeros(length(X),1);                    
                     V=zeros(length(X),1);
+                    S=size(X);X=X(:);Y=Y(:);
                     Eval=reshape(downsample(downsample( mask(Y(1):Y(end),X(1):X(end)),Gres(e,2))',Gres(e,1))',length(X),1);
                     Eval(Eval==0)=-1;
                     Eval(Eval>0)=0;
@@ -2358,7 +2372,7 @@ switch char(M)
                     Ub = VFinterp(XI,YI,UI,Xm,Ym,Velinterp).*Dt(t);
                     Vb = VFinterp(XI,YI,VI,Xm,Ym,Velinterp).*Dt(t);
 
-                    S=size(X);X=X(:);Y=Y(:);
+%                     S=size(X);X=X(:);Y=Y(:);
 
                     %                     [Xc,Yc,Uc,Vc,Cc,t_optc]=PIVphasecorr(im1,im2,Wsize(e,:), Wres(e, :, :),0,D(e),Zeromean(e),Peakswitch(e),X(Eval>=0),Y(Eval>=0),Ub(Eval>=0),Vb(Eval>=0),Dt);
                     [Xc,Yc,Uc,Vc,Cc,t_optc]=PIVphasecorr(im1,im2,Wsize(e,:),Wres(:, :, e),0,D(e,:),Zeromean(e),Peakswitch(e),X(Eval>=0),Y(Eval>=0),Ub(Eval>=0),Vb(Eval>=0),Dt);
@@ -2401,7 +2415,7 @@ switch char(M)
                         if PeakVel(e) && ~strcmpi(Corr{e},'SPC')
                             U=[Uval(:,1),U(:,1:PeakNum(e))];
                             V=[Vval(:,1),V(:,1:PeakNum(e))];
-                            Eval=[Evalval(:,1),Eval(:,1:PeakNum(e))];
+                            Eval=[Evalval(:,1),Eval(:,1)];
                         else
                             U=Uval(:,1); V=Vval(:,1);Eval=Evalval(:,1);
                         end
